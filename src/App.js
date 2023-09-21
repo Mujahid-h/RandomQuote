@@ -1,5 +1,5 @@
 // App.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Quote from "./Components/Quote";
 import Author from "./Components/Author";
 import NewQuoteButton from "./Components/NewQuoteButton";
@@ -8,10 +8,12 @@ import "./App.css";
 const App = () => {
   const [quote, setQuote] = useState("");
   const [author, setAuthor] = useState("");
-  const [backgroundColor, setBackgroundColor] = useState("#333"); // Default background color
+
+  useEffect(() => {
+    fetchRandomQuote();
+  }, []);
 
   const getRandomColor = () => {
-    // Generate a random color
     const letters = "0123456789ABCDEF";
     let color = "#";
     for (let i = 0; i < 6; i++) {
@@ -19,7 +21,6 @@ const App = () => {
     }
     return color;
   };
-
   const fetchRandomQuote = async () => {
     try {
       const response = await fetch("https://api.quotable.io/random");
@@ -28,10 +29,8 @@ const App = () => {
       }
       const data = await response.json();
 
-      // Set a random background color
       const newColor = getRandomColor();
-      setBackgroundColor(newColor);
-
+      document.body.style.backgroundColor = newColor;
       setQuote(data.content);
       setAuthor(data.author);
     } catch (error) {
@@ -40,20 +39,10 @@ const App = () => {
   };
 
   return (
-    <div
-      className="App"
-      style={{
-        backgroundColor: backgroundColor,
-        transition: "background-color 0.5s",
-      }}
-    >
+    <div className="App">
       <Quote className="quote-text" text={quote} />
       <Author className="quote-author" author={author} />
-      <NewQuoteButton
-        className="new-quote-button"
-        onClick={fetchRandomQuote}
-        setBackgroundColor={setBackgroundColor} // Pass the setBackgroundColor function
-      >
+      <NewQuoteButton className="new-quote-button" onClick={fetchRandomQuote}>
         New Quote
       </NewQuoteButton>
     </div>
